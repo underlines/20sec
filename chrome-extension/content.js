@@ -52,13 +52,29 @@ function manipulateDOM() {
 			articleDiv.className = 'hn-article';
 
 			const a = article.querySelector('a');
-			const title = a ? a.innerText : 'No Title';
-			const link = a ? a.href : '#';
+
+			// Extracting Main title
+			const mainTitleSpan = a ? a.querySelector('h2 > span:last-child') : null;
+			const mainTitle = mainTitleSpan ? mainTitleSpan.innerText : 'No Title';
+			// Extracting Sub title
+			const subTitleSpan = a ? a.querySelector('h2 > div > span') : null;
+			const subTitle = subTitleSpan ? subTitleSpan.innerText : null;
+			// Extracting Tag
+			const tagSpan = a ? a.querySelector('div > div > span') : null;
+			const tag = tagSpan ? tagSpan.innerText : null;
+			// Formatting the title
+			let formattedTitle = mainTitle;
+			if (subTitle) {
+			  formattedTitle = `${subTitle}: ${formattedTitle}`;
+			}
+			if (tag) {
+			  formattedTitle = `${formattedTitle} (${tag})`;
+			}
 
 			const articleLink = document.createElement('a');
 			articleLink.className = 'hn-article-link';
-			articleLink.href = link;
-			articleLink.innerText = title;
+			articleLink.href = a ? a.href : '#';
+			articleLink.innerText = formattedTitle;
 
 			const buttons = article.querySelectorAll('button > div');
 			let comments = buttons.length > 0 ? buttons[0].innerText : 'N/A';
