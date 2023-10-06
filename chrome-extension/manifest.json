@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+  "name": "My Extension",
+  "version": "1.0",
+  "description": "Clean up 20min.ch",
+  "permissions": [
+	  "storage",
+	  "https://www.20min.ch/*"
+	],
+	"browser_action": {
+	  "default_popup": "popup.html"
+	},
+	"background": {
+	  "scripts": ["background.js"],
+	  "persistent": true
+	},
+	"content_scripts": [
+	  {
+		"matches": ["https://www.20min.ch/*"],
+		"js": ["content.js"]
+	  }
+	]
+}
