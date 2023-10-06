@@ -37,63 +37,71 @@ chrome.runtime.onMessage.addListener(
 );
 
 function manipulateDOM() {
-  const url = window.location.href;
-  if (url === 'https://www.20min.ch/') {
-    chrome.storage.sync.get('extensionState', function(result) {
-      if (result.extensionState === 'on') {
-        const articles = document.querySelectorAll('article');
+	const url = window.location.href;
+	// home page
+	if (url === 'https://www.20min.ch/') {
+	  chrome.storage.sync.get('extensionState', function(result) {
+		if (result.extensionState === 'on') {
+		  const articles = document.querySelectorAll('section > div > article');
 
-        // Clear the entire body to remove any existing clutter
-        document.body.innerHTML = '';
+		  // Clear the entire body to remove any existing clutter
+		  document.body.innerHTML = '';
 
-        articles.forEach((article, index) => {
-          const articleDiv = document.createElement('div');
-          articleDiv.className = 'hn-article';
+		  articles.forEach((article, index) => {
+			const articleDiv = document.createElement('div');
+			articleDiv.className = 'hn-article';
 
-          const a = article.querySelector('a');
-          const title = a ? a.innerText : 'No Title';
-          const link = a ? a.href : '#';
+			const a = article.querySelector('a');
+			const title = a ? a.innerText : 'No Title';
+			const link = a ? a.href : '#';
 
-          const articleLink = document.createElement('a');
-          articleLink.className = 'hn-article-link';
-          articleLink.href = link;
-          articleLink.innerText = title;
+			const articleLink = document.createElement('a');
+			articleLink.className = 'hn-article-link';
+			articleLink.href = link;
+			articleLink.innerText = title;
 
-          const articleInfo = document.createElement('div');
-          articleInfo.className = 'hn-article-info';
-          articleInfo.innerText = 'TODO: Add metadata like comments, reactions, and shares';
+			const buttons = article.querySelectorAll('button > div');
+			let comments = buttons.length > 0 ? buttons[0].innerText : 'N/A';
+			let reactions = buttons.length > 1 ? buttons[1].innerText : 'N/A';
+			let shares = buttons.length > 2 ? buttons[2].innerText : 'N/A';
 
-          articleDiv.appendChild(articleLink);
-          articleDiv.appendChild(articleInfo);
+			const articleInfo = document.createElement('div');
+			articleInfo.className = 'hn-article-info';
+			articleInfo.innerText = `Comments: ${comments}, Reactions: ${reactions}, Shares: ${shares}`;
 
-          document.body.appendChild(articleDiv);
-        });
-      }
-    });
-  } else if (url.startsWith('https://www.20min.ch/story/')) {
-    chrome.storage.sync.get('extensionState', function(result) {
-      if (result.extensionState === 'on') {
-        const articleContent = document.querySelector('article > section');
-        
-        if (articleContent) {
-          // Clear the entire body to remove existing clutter
-          document.body.innerHTML = '';
+			articleDiv.appendChild(articleLink);
+			articleDiv.appendChild(articleInfo);
 
-          let alt = false;
+			document.body.appendChild(articleDiv);
+		  });
+		}
+	  });
+	}
+	// article (story) page
+	else if (url.startsWith('https://www.20min.ch/story/')) {
+		chrome.storage.sync.get('extensionState', function(result) {
+		  if (result.extensionState === 'on') {
+			const articleContent = document.querySelector('article > section');
+			
+			if (articleContent) {
+			  // Clear the entire body to remove existing clutter
+			  document.body.innerHTML = '';
 
-          articleContent.querySelectorAll('div').forEach((div, index) => {
-            const articleDiv = document.createElement('div');
-            articleDiv.className = alt ? 'hn-article-alt' : 'hn-article';
-            alt = !alt;  // toggle for alternating styles
+			  let alt = false;
 
-            articleDiv.innerHTML = div.innerHTML;
+			  articleContent.querySelectorAll('div').forEach((div, index) => {
+				const articleDiv = document.createElement('div');
+				articleDiv.className = alt ? 'hn-article-alt' : 'hn-article';
+				alt = !alt;  // toggle for alternating styles
 
-            document.body.appendChild(articleDiv);
-          });
-        }
-      }
-    });
-  }
+				articleDiv.innerHTML = div.innerHTML;
+
+				document.body.appendChild(articleDiv);
+			  });
+			}
+		  }
+		});
+	}
 }
 
 // Call manipulateDOM on page load as well

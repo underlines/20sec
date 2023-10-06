@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "My Extension",
+  "name": "20sec",
   "version": "1.0",
   "description": "Clean up 20min.ch",
   "permissions": [
