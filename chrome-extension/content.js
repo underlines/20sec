@@ -1,3 +1,6 @@
+// Create a variable to hold articles
+let storedArticles = [];
+
 // Add a simple Hacker News-like stylesheet to the page
 const style = document.createElement('style');
 style.textContent = `
@@ -23,6 +26,65 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+
+function sortArticles(type) {
+  storedArticles.sort((a, b) => {
+    const aValue = isNaN(Number(a[type])) ? 0 : Number(a[type]);
+    const bValue = isNaN(Number(b[type])) ? 0 : Number(b[type]);
+    return bValue - aValue;
+  });
+  renderArticles();
+}
+
+function renderArticles() {
+  document.body.innerHTML = ''; // Clear existing articles
+
+  // Add sort buttons
+  const sortBar = document.createElement('div');
+
+  const sortCommentsBtn = document.createElement('button');
+  sortCommentsBtn.innerText = 'Sort by Comments';
+  sortCommentsBtn.addEventListener('click', () => sortArticles('comments'));
+
+  const sortReactionsBtn = document.createElement('button');
+  sortReactionsBtn.innerText = 'Sort by Reactions';
+  sortReactionsBtn.addEventListener('click', () => sortArticles('reactions'));
+
+  const sortSharesBtn = document.createElement('button');
+  sortSharesBtn.innerText = 'Sort by Shares';
+  sortSharesBtn.addEventListener('click', () => sortArticles('shares'));
+
+  const reverseOrderBtn = document.createElement('button');
+  reverseOrderBtn.innerText = 'Reverse Order';
+  reverseOrderBtn.addEventListener('click', () => {
+    storedArticles.reverse();
+    renderArticles();
+  });
+
+  sortBar.appendChild(sortCommentsBtn);
+  sortBar.appendChild(sortReactionsBtn);
+  sortBar.appendChild(sortSharesBtn);
+  sortBar.appendChild(reverseOrderBtn);
+
+  document.body.appendChild(sortBar);
+
+  storedArticles.forEach((articleData) => {
+    const articleDiv = document.createElement('div');
+    articleDiv.className = 'hn-article';
+    const articleLink = document.createElement('a');
+    articleLink.className = 'hn-article-link';
+    articleLink.href = articleData.href;
+    articleLink.innerText = articleData.title;
+    const articleInfo = document.createElement('div');
+    articleInfo.className = 'hn-article-info';
+    articleInfo.innerText = `Comments: ${articleData.comments}, Reactions: ${articleData.reactions}, Shares: ${articleData.shares}`;
+
+    articleDiv.appendChild(articleLink);
+    articleDiv.appendChild(articleInfo);
+    document.body.appendChild(articleDiv);
+  });
+}
+
 // Listen for state changes from the background script
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -40,58 +102,39 @@ function manipulateDOM() {
 	const url = window.location.href;
 	// home page
 	if (url === 'https://www.20min.ch/') {
-	  chrome.storage.sync.get('extensionState', function(result) {
-		if (result.extensionState === 'on') {
-		  const articles = document.querySelectorAll('section > div > article');
+		chrome.storage.sync.get('extensionState', function(result) {
+		  if (result.extensionState === 'on') {
+			const articles = document.querySelectorAll('section > div > article');
 
-		  // Clear the entire body to remove any existing clutter
-		  document.body.innerHTML = '';
+			articles.forEach((article, index) => {
+			  const a = article.querySelector('a');
 
-		  articles.forEach((article, index) => {
-			const articleDiv = document.createElement('div');
-			articleDiv.className = 'hn-article';
+			  const mainTitleSpan = a ? a.querySelector('h2 > span:last-child') : null;
+			  const mainTitle = mainTitleSpan ? mainTitleSpan.innerText : 'No Title';
+			  const subTitleSpan = a ? a.querySelector('h2 > div > span') : null;
+			  const subTitle = subTitleSpan ? subTitleSpan.innerText : null;
+			  const tagSpan = a ? a.querySelector('div > div > span') : null;
+			  const tag = tagSpan ? tagSpan.innerText : null;
 
-			const a = article.querySelector('a');
+			  let formattedTitle = mainTitle;
+			  if (subTitle) {
+				formattedTitle = `${subTitle}: ${formattedTitle}`;
+			  }
+			  if (tag) {
+				formattedTitle = `${formattedTitle} (${tag})`;
+			  }
 
-			// Extracting Main title
-			const mainTitleSpan = a ? a.querySelector('h2 > span:last-child') : null;
-			const mainTitle = mainTitleSpan ? mainTitleSpan.innerText : 'No Title';
-			// Extracting Sub title
-			const subTitleSpan = a ? a.querySelector('h2 > div > span') : null;
-			const subTitle = subTitleSpan ? subTitleSpan.innerText : null;
-			// Extracting Tag
-			const tagSpan = a ? a.querySelector('div > div > span') : null;
-			const tag = tagSpan ? tagSpan.innerText : null;
-			// Formatting the title
-			let formattedTitle = mainTitle;
-			if (subTitle) {
-			  formattedTitle = `${subTitle}: ${formattedTitle}`;
-			}
-			if (tag) {
-			  formattedTitle = `${formattedTitle} (${tag})`;
-			}
+			  const buttons = article.querySelectorAll('button > div');
+			  let comments = buttons.length > 0 ? buttons[0].innerText : 'N/A';
+			  let reactions = buttons.length > 1 ? buttons[1].innerText : 'N/A';
+			  let shares = buttons.length > 2 ? buttons[2].innerText : 'N/A';
 
-			const articleLink = document.createElement('a');
-			articleLink.className = 'hn-article-link';
-			articleLink.href = a ? a.href : '#';
-			articleLink.innerText = formattedTitle;
+			  storedArticles.push({title: formattedTitle, comments, reactions, shares, href: a ? a.href : '#' });
+			});
 
-			const buttons = article.querySelectorAll('button > div');
-			let comments = buttons.length > 0 ? buttons[0].innerText : 'N/A';
-			let reactions = buttons.length > 1 ? buttons[1].innerText : 'N/A';
-			let shares = buttons.length > 2 ? buttons[2].innerText : 'N/A';
-
-			const articleInfo = document.createElement('div');
-			articleInfo.className = 'hn-article-info';
-			articleInfo.innerText = `Comments: ${comments}, Reactions: ${reactions}, Shares: ${shares}`;
-
-			articleDiv.appendChild(articleLink);
-			articleDiv.appendChild(articleInfo);
-
-			document.body.appendChild(articleDiv);
-		  });
-		}
-	  });
+			renderArticles();
+		  }
+		});
 	}
 	// article (story) page
 	else if (url.startsWith('https://www.20min.ch/story/')) {
