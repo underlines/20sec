@@ -1,5 +1,6 @@
 // Create a variable to hold articles
 let storedArticles = [];
+let originalArticles = [];
 
 // Add a simple Hacker News-like stylesheet to the page
 const style = document.createElement('style');
@@ -26,6 +27,10 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+function resetToOriginalOrder() {
+  storedArticles = [...originalArticles];
+  renderArticles();
+}
 
 function sortArticles(type) {
   storedArticles.sort((a, b) => {
@@ -60,7 +65,12 @@ function renderArticles() {
     storedArticles.reverse();
     renderArticles();
   });
-
+  
+  const resetOrderBtn = document.createElement('button');
+  resetOrderBtn.innerText = 'Reset to Original Order';
+  resetOrderBtn.addEventListener('click', resetToOriginalOrder);
+  
+  sortBar.appendChild(resetOrderBtn);
   sortBar.appendChild(sortCommentsBtn);
   sortBar.appendChild(sortReactionsBtn);
   sortBar.appendChild(sortSharesBtn);
@@ -130,6 +140,7 @@ function manipulateDOM() {
 			  let shares = buttons.length > 2 ? buttons[2].innerText : 'N/A';
 
 			  storedArticles.push({title: formattedTitle, comments, reactions, shares, href: a ? a.href : '#' });
+			  originalArticles = [...storedArticles];
 			});
 
 			renderArticles();
