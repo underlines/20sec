@@ -1,8 +1,11 @@
 # 20sec
  Read 20min.ch in 20sec with a clutter free Hackernews theme
  
- ![Home after](home_after.png)
- ![Story after](story_after.png)
+## Home
+ ![Home](/preview/home.png)
+ 
+## Story
+ ![Story](/preview/story.png)
  
  
 # Install
