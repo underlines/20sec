@@ -1,5 +1,5 @@
 # 20sec
- Read 20min.ch in 20sec with a clutter free Hackernews theme
+ Read 20 Minuten in 20sec using a clutter free Hackernews theme, loading this Chrome Browser Extension
 
 # Install
  1. Open Chrome, Edge or any Chromium based browser
