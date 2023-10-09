@@ -158,8 +158,8 @@ function manipulateDOM() {
 			  document.body.innerHTML = '';
 
 			  let alt = false;
-
-			  articleContent.querySelectorAll('div').forEach((div, index) => {
+			  // clone the top-level <div> elements directly under the <section> within the <article>, using the child combinator (>) to get only direct children
+			  articleContent.querySelectorAll(':scope > div').forEach((div, index) => {
 				const articleDiv = document.createElement('div');
 				articleDiv.className = alt ? 'hn-article-alt' : 'hn-article';
 				alt = !alt;  // toggle for alternating styles
