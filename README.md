@@ -22,20 +22,19 @@
  
 # Limitations / Bugs
 
- - Paragraphs too wide:
-   On desktop the story paragraphs are wide, which is not reader friendly
-   
- - Images / Videos not displayed correctly:
-   Images are too large, Videos don't play
+ - Images Slideshows / Videos don't work:
+   Next/previous buttons don't work, Videos don't play.
 
- - Turn On/Off cumbersome:
-   You have to click onto the extension icon 2x (close and open the Menu) to change the "Turn Off" or "Turn On" button
+ - On/Off cumbersome:
+   The button doesn't update. You have to click 2x onto the extension.
 
  - No lazy loading:
-   The home page of 20min.ch uses lazy loading and only articles already loaded before enabling the extension will be displayed
+   The home page of 20min.ch uses lazy loading and only articles already loaded before enabling the extension will be displayed.
 
- - No comments
+ - No comments.
 
- - No videos
-
- - No reactions
+ - No reactions.
+ 
+ - No sharing.
+ 
+ - "News ticker" articles don't work.

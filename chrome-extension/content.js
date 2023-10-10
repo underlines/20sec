@@ -181,6 +181,10 @@ function manipulateDOM() {
 			if (articleContent) {
 			  // Clear the entire body to remove existing clutter
 			  document.body.innerHTML = '';
+			  
+			  // Create wrapper
+			  const wrapper = document.createElement('div');
+			  wrapper.className = 'hn-wrapper';
 
 			  let alt = false;
 			  // clone the top-level <div> elements directly under the <section> within the <article>, using the child combinator (>) to get only direct children
@@ -191,8 +195,11 @@ function manipulateDOM() {
 
 				articleDiv.innerHTML = div.innerHTML;
 
-				document.body.appendChild(articleDiv);
+				wrapper.appendChild(articleDiv);
 			  });
+			  
+			  // Append wrapper to body
+			  document.body.appendChild(wrapper);
 			}
 		  }
 		});
