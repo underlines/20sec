@@ -24,7 +24,21 @@ style.textContent = `
     font-size: 12px;
     color: #828282;
   }
+  .hn-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  @media (max-width: 768px) {
+    .hn-wrapper {
+      max-width: 100%;
+      padding: 0 10px;
+    }
+  }
 `;
+
+
+
+
 document.head.appendChild(style);
 
 function resetToOriginalOrder() {
@@ -78,6 +92,12 @@ function renderArticles() {
 
   document.body.appendChild(sortBar);
 
+  // Create wrapper
+  const wrapper = document.createElement('div');
+  wrapper.className = 'hn-wrapper';
+  // Append sortBar to wrapper
+  wrapper.appendChild(sortBar);
+
   storedArticles.forEach((articleData) => {
     const articleDiv = document.createElement('div');
     articleDiv.className = 'hn-article';
@@ -92,7 +112,12 @@ function renderArticles() {
     articleDiv.appendChild(articleLink);
     articleDiv.appendChild(articleInfo);
     document.body.appendChild(articleDiv);
+    
+    wrapper.appendChild(articleDiv);
   });
+  
+  // Append wrapper to body
+  document.body.appendChild(wrapper);
 }
 
 // Listen for state changes from the background script
